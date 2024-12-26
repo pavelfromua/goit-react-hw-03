@@ -3,7 +3,12 @@ import {ErrorMessage, Field, Form, Formik} from "formik";
 import {nanoid} from 'nanoid';
 import * as Yup from 'yup';
 
-export default function ContactForm({contacts, setContacts}) {
+export default function ContactForm({addContact}) {
+    const handleSubmit = (values, {resetForm}) => {
+        addContact({id: nanoid(), name: values.name, number: values.number});
+        resetForm();
+    };
+
     const validationSchema = Yup.object({
         name: Yup.string()
             .required('Required')
@@ -22,9 +27,7 @@ export default function ContactForm({contacts, setContacts}) {
                 number: ''
             }}
             validationSchema={validationSchema}
-            onSubmit={(values) => {
-                setContacts([...contacts, {id: nanoid(), name: values.name, number: values.number}]);
-            }}>
+            onSubmit={handleSubmit}>
             <Form className={s.form}>
                 <div className={s.fieldContainer}>
                     <label htmlFor="name" className={s.label}>Name</label>

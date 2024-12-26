@@ -21,25 +21,32 @@ function App() {
         ];
     });
 
-    const [filteredContacts, setFilteredContacts] = useState([...contacts]);
+    useEffect(() => {
+        window.localStorage.setItem("saved-contacts", JSON.stringify(contacts));
+    }, [contacts]);
 
     const [search, setSearch] = useState('');
 
-    useEffect(() => {
-        setFilteredContacts(contacts.filter(value => search === '' || value.name.toLocaleLowerCase().includes(search.toLocaleLowerCase())));
-    }, [search]);
+    const filteredContacts = contacts.filter(value => search === ''
+        || value.name.toLocaleLowerCase().includes(search.toLocaleLowerCase())
+    );
 
-    useEffect(() => {
-        setFilteredContacts(contacts.filter(value => search === '' || value.name.toLocaleLowerCase().includes(search.toLocaleLowerCase())));
-        window.localStorage.setItem("saved-contacts", JSON.stringify(contacts));
-    }, [contacts]);
+    const addContact = (newContact) => {
+        setContacts((prev) => {
+            return [...prev, newContact];
+        });
+    };
+
+    const deleteContact = (id) => {
+        setContacts(prev => prev.filter(item => item.id !== id));
+    }
 
     return (
         <div>
             <h1>Phonebook</h1>
-            <ContactForm contacts={contacts} setContacts={setContacts}/>
+            <ContactForm addContact={addContact} contacts={contacts} />
             <SearchBox setSearch={setSearch}/>
-            <ContactList filteredContacts={filteredContacts} contacts={contacts} setContacts={setContacts}/>
+            <ContactList contacts={filteredContacts} onDeleteContact={deleteContact}/>
         </div>
     )
 }
